@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: >
+      Represents a table of customers and their latest address info with added inforation such as total orders and total spend. 
+      One row per customer. Source is stg_orders, stg_customers and fct_orders.
+      Due to data issues a customer may exist with total_spend and total_orders showing null as supporting data may be missing.
+
+    columns:
+      - name: customer_unique_id
+        description: Unique identifier for each customer.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_unique_id
+      - name: total_orders
+        description: >
+          Total number of orders placed by this customer. 
+          Null indicates the customer exists in the source system 
+          but has no valid payment records — may be a data quality issue.
+
+      - name: total_spend
+        description: >
+          Total payment amount across all orders for this customer.
+          Null for the same reason as total_orders.

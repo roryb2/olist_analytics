@@ -1,0 +1,153 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: >
+      Cleaned and renamed orders from the Olist marketplace. 
+      One row per order. Source is the olist_orders_dataset seed.
+
+    columns:
+      - name: order_id
+        description: Unique identifier for each order.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        description: Foreign key to stg_customers.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+      - name: order_status
+        description: Current status of the order.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled',
+                        'unavailable', 'invoiced', 'processing',
+                        'approved', 'created']
+
+  - name: stg_customers
+    description: >
+      Cleaned and renamed customers from the Olist marketplace. 
+      One row per customer by order. Source is the olist_customers_dataset seed.
+
+    columns:
+      - name: customer_id
+        description: Unique identifier per order record. A single real customer may have multiple customer_ids across different orders.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: customer_unique_id
+        description: Unique identifier for customers.
+        data_tests:
+          - not_null
+
+  - name: stg_order_items
+    description: >
+      Cleaned and renamed orders with line items from the Olist marketplace. 
+      One row per order item. Source is the olist_order_items_dataset seed. Unique key is order_id + item_id
+
+    columns:
+      - name: item_id
+        description: Unique identifier for each order item.
+        data_tests:
+          - not_null
+
+      - name: order_id
+        description: Foreign key to stg_orders.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: product_id
+        description: Foreign key to stg_products.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+      - name: seller_id
+        description: Foreign key to stg_sellers.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_sellers')
+                field: seller_id
+
+  - name: stg_payments
+    description: >
+      Cleaned and renamed payments from the Olist marketplace. 
+      One row per payment. Source is the olist_order_payments_dataset seed. Unique key is order_id + payment_sequence. 
+      Due to data issues a customer may exist with total_spend and total_orders showing null as supporting data may be missing.
+    columns:
+      - name: order_id
+        description: Foreign key to stg_orders.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: payment_method
+        description: Mode of payment.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['credit_card', 'boleto', 'voucher',
+                        'debit_card', 'not_defined']
+  - name: stg_products
+    description: >
+      Cleaned and renamed products from the Olist marketplace. 
+      One row per product. Source is the olist_products_dataset seed.
+
+    columns:
+      - name: product_id
+        description: Unique identifier for each product.
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_reviews
+    description: >
+      Cleaned and renamed order reviews from the Olist marketplace. 
+      One row per order review. Source is the olist_order_reviews_dataset seed. Unique key is order_id + review_id
+
+    columns:
+      - name: review_id
+        description: Unique identifier for each review.
+        data_tests:
+          - not_null
+
+      - name: order_id
+        description: Foreign key to stg_orders.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+  - name: stg_sellers
+    description: >
+      Cleaned and renamed sellers from the Olist marketplace. 
+      One row per seller. Source is the olist_sellers_dataset seed.
+
+    columns:
+      - name: seller_id
+        description: Unique identifier for each seller.
+        data_tests:
+          - unique
+          - not_null

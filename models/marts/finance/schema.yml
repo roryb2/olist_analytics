@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: >
+      Represents a table of orders with added inforation such as item count and total frieght amount. 
+      One row per order. Source is stg_order_items and int_orders_with_payments.
+
+    columns:
+      - name: order_id
+        description: Unique identifier for each order.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: customer_id
+        description: Foreign key to stg_customers.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+      - name: order_status
+        description: Current status of the order.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled',
+                        'unavailable', 'invoiced', 'processing',
+                        'approved', 'created']
+                      
+      - name: primary_payment_method
+        description: Mode of payment.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['credit_card', 'boleto', 'voucher',
+                        'debit_card', 'not_defined']
+                    
+      - name: total_payment_amount
+        description: Total payment amount for order.
+        data_tests:
+          - not_null
+
