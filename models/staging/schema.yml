@@ -90,7 +90,7 @@ models:
     description: >
       Cleaned and renamed payments from the Olist marketplace. 
       One row per payment. Source is the olist_order_payments_dataset seed. Unique key is order_id + payment_sequence. 
-      Due to data issues a customer may exist with total_spend and total_orders showing null as supporting data may be missing.
+      
     columns:
       - name: order_id
         description: Foreign key to stg_orders.

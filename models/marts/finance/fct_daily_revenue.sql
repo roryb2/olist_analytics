@@ -8,12 +8,12 @@ with date_spine as (
 
 orders as (
     select
-        ordered_at::date as order_date,
+        cast(ordered_at as date) as order_date,
         count(order_id)  as order_count,
         sum(total_payment_amount) as daily_revenue,
         avg(total_payment_amount) as avg_order_value
     from {{ ref('fct_orders') }}
-    group by ordered_at::date
+    group by ordered_at
 )
 
 select

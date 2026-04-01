@@ -34,7 +34,7 @@ select
     owp.*,
     order_items.order_item_count as order_item_count,
     order_items.total_freight_amount as total_freight_amount,
-    DATEDIFF('day', owp.ordered_at, owp.delivered_at) as delivery_time_days,
+    {{ date_diff_days('owp.ordered_at', 'owp.delivered_at')}} as delivery_time_days,
     case
         when owp.order_status = 'delivered' then true
         else false
